@@ -11,7 +11,6 @@ env:
   DOCKER_REGISTRY: swr.ap-southeast-2.myhuaweicloud.com
   DOCKER_NAMESPACE: live/ghulammuzzmit
   IMAGE_NAME: scrapper
-  DOCKER_BUILDKIT: 0
 
 jobs:
   build-and-deploy:
@@ -27,25 +26,23 @@ jobs:
         id: vars
         run: echo "SHORT_SHA=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
       - name: Login to Huawei SWR
         run: |
-          docker login -u ap-southeast-2@${{ secrets.HUAWEI_SWR_ACCESS_ID }} \
+          docker login -u ap-southeast-2@HPUAOVH4VVOLGGNU6UAZ \
             -p ${{ secrets.HUAWEI_SWR_PASSWORD }} \
             swr.ap-southeast-2.myhuaweicloud.com
 
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          push: true
-          tags: |
-            ${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_NAMESPACE }}/${{ env.IMAGE_NAME }}:${{ steps.vars.outputs.SHORT_SHA }}
+      - name: Build Docker image
+        run: |
+          export DOCKER_BUILDKIT=0
+          docker build -t ${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_NAMESPACE }}/${{ env.IMAGE_NAME }}:${{ steps.vars.outputs.SHORT_SHA }} .
+          docker tag ${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_NAMESPACE }}/${{ env.IMAGE_NAME }}:${{ steps.vars.outputs.SHORT_SHA }} \
             ${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_NAMESPACE }}/${{ env.IMAGE_NAME }}:latest
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+
+      - name: Push Docker image
+        run: |
+          docker push ${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_NAMESPACE }}/${{ env.IMAGE_NAME }}:${{ steps.vars.outputs.SHORT_SHA }}
+          docker push ${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_NAMESPACE }}/${{ env.IMAGE_NAME }}:latest
 
       - name: Configure kubectl
         run: |
