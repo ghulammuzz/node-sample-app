@@ -68,9 +68,6 @@ jobs:
           echo "Deploying virtual service..."
           kubectl apply -f .k8s/vs/
           
-          echo "Waiting for rollout to complete..."
-          kubectl rollout status deployment/scrapper-app -n test --timeout=5m
-          
           echo "Deployment completed successfully!"
 
       - name: Verify deployment
