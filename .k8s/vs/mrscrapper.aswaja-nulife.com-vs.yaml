@@ -11,6 +11,6 @@ spec:
   http:
   - route:
     - destination:
-        host: mrscrapper-app.test.svc.cluster.local
+        host: scrapper-app.test.svc.cluster.local
         port:
           number: 3000
