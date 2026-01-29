@@ -60,7 +60,7 @@ app.get('/api/info', (req, res) => {
 
 app.post('/api/echo', (req, res) => {
   res.json({
-    message: 'Echo endpoint',
+    message: 'Echo endpoint trigger',
     receivedData: req.body,
     timestamp: new Date().toISOString()
   });
