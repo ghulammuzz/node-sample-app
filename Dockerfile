@@ -4,7 +4,7 @@ WORKDIR /app
 
 COPY package*.json ./
 
-RUN npm ci
+RUN npm install --prefer-offline --no-audit
 
 COPY . .
 
@@ -19,7 +19,7 @@ WORKDIR /app
 
 COPY package*.json ./
 
-RUN npm ci --only=production && \
+RUN npm install --only=production --prefer-offline --no-audit && \
     npm cache clean --force
 
 COPY --from=builder --chown=nodejs:nodejs /app .
